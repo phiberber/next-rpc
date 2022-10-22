@@ -3,7 +3,7 @@
   "version": "3.5.2",
   "description": "Call serverside code from the browser in Next.js applications",
   "main": "index.js",
-  "repository": "https://github.com/phberber/next-rpc",
+  "repository": "https://github.com/phiberber/next-rpc",
   "author": "Jan Potoms",
   "license": "MIT",
   "files": [
