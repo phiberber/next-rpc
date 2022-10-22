@@ -1,3 +1,4 @@
+
 import { annotateAsPure, literalToAst } from './astUtils';
 import * as babel from '@babel/core';
 import { WrapMethodMeta } from './server';
@@ -191,14 +192,31 @@ export default function (
               declaration.node.kind === 'const'
             ) {
               for (const variable of declaration.get('declarations')) {
-                const init = variable.get('init');
+                let init = variable.get('init');
+                let node = init.node
+
+                if (init.isCallExpression()) {
+                  node = t.arrowFunctionExpression(
+                    [t.restElement(t.identifier('args'))],
+                    t.blockStatement([
+                      t.returnStatement(
+                        t.awaitExpression(
+                          t.callExpression(
+                            init.node,
+                            [t.spreadElement(t.identifier('args'))]
+                          )
+                        )
+                      )
+                    ]), true)
+                }
+
                 if (getConfigObjectExpression(variable)) {
                   // ignore, this is the only allowed non-function export
                 } else if (
-                  init.isFunctionExpression() ||
-                  init.isArrowFunctionExpression()
+                  t.isFunctionExpression(node) ||
+                  t.isArrowFunctionExpression(node)
                 ) {
-                  if (!init.node.async) {
+                  if (!node.async) {
                     throw init.buildCodeFrameError(
                       'rpc exports must be async functions'
                     );
@@ -209,7 +227,7 @@ export default function (
                     rpcMethodNames.push(methodName);
                     if (isServer) {
                       init.replaceWith(
-                        createRpcMethod(init.node, {
+                        createRpcMethod(node, {
                           name: methodName,
                           pathname: rpcPath,
                         })
