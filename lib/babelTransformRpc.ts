@@ -1,4 +1,3 @@
-
 import { annotateAsPure, literalToAst } from './astUtils';
 import * as babel from '@babel/core';
 import { WrapMethodMeta } from './server';
@@ -193,7 +192,7 @@ export default function (
             ) {
               for (const variable of declaration.get('declarations')) {
                 let init = variable.get('init');
-                let node = init.node
+                let node = init.node;
 
                 if (init.isCallExpression()) {
                   node = t.arrowFunctionExpression(
@@ -201,13 +200,14 @@ export default function (
                     t.blockStatement([
                       t.returnStatement(
                         t.awaitExpression(
-                          t.callExpression(
-                            init.node,
-                            [t.spreadElement(t.identifier('args'))]
-                          )
+                          t.callExpression(init.node, [
+                            t.spreadElement(t.identifier('args')),
+                          ])
                         )
-                      )
-                    ]), true)
+                      ),
+                    ]),
+                    true
+                  );
                 }
 
                 if (getConfigObjectExpression(variable)) {

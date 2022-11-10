@@ -1,3 +1,4 @@
+import { EJSON } from 'bson';
 import { NextApiHandler, NextApiResponse } from 'next';
 
 export type Method<P extends any[], R> = (...params: P) => Promise<R>;
@@ -60,8 +61,9 @@ export function createRpcHandler(
     }
 
     try {
-      const result = await requestedFn(...params);
-      return res.json({ result });
+      const serializedParams = EJSON.parse(params) as any;
+      const result = await requestedFn(...serializedParams);
+      return res.json({ result: EJSON.stringify(result) });
     } catch (error) {
       const {
         name = 'NextRpcError',

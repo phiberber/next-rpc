@@ -1,3 +1,5 @@
+import { EJSON } from 'bson';
+
 function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
@@ -24,7 +26,7 @@ function createRpcFetcher(url: string, method: string): NextRpcCall {
       method: 'POST',
       body: JSON.stringify({
         method,
-        params: Array.prototype.slice.call(arguments),
+        params: EJSON.stringify(Array.prototype.slice.call(arguments)),
       }),
       headers: {
         'content-type': 'application/json',
@@ -44,7 +46,7 @@ function createRpcFetcher(url: string, method: string): NextRpcCall {
           }
           throw err;
         }
-        return json.result;
+        return EJSON.parse(json.result);
       });
   };
 }
