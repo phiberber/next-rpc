@@ -1,6 +1,6 @@
 {
   "name": "@phiberber/next-rpc",
-  "version": "3.6.0",
+  "version": "3.6.5",
   "description": "Call serverside code from the browser in Next.js applications",
   "main": "index.js",
   "repository": "https://github.com/phiberber/next-rpc",
